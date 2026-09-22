@@ -21,10 +21,10 @@ public class ProductService {
         // sau đó lưu vào cơ sở dữ liệu thông qua repository.
 
         Product product = Product.builder()
-                .id(productRequest.id())
-                .name(productRequest.name())
-                .description(productRequest.description())
-                .price(productRequest.price())
+                .id(productRequest.getId())
+                .name(productRequest.getName())
+                .description(productRequest.getDescription())
+                .price(productRequest.getPrice())
                 .build();
 
         productRepository.save(product);
