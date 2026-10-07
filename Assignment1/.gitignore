@@ -1,0 +1,21 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Container database data
+docker/
+**/docker/
+volume-data/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# Logs & temp
+*.log
+.DS_Store
+~$*
