@@ -1,6 +1,8 @@
 package com.fudn.customerservice.service;
 
+import com.fudn.customerservice.dto.ChangePasswordRequest;
 import com.fudn.customerservice.dto.CustomerResponse;
+import com.fudn.customerservice.dto.ProfileUpdateRequest;
 import com.fudn.customerservice.dto.RegisterRequest;
 import com.fudn.customerservice.exception.ApiException;
 import com.fudn.customerservice.model.Customer;
@@ -43,7 +45,39 @@ public class CustomerService {
         return CustomerResponse.from(saved);
     }
 
+    // TODO 2.5
+    public CustomerResponse getProfile(Long customerId) {
+        return CustomerResponse.from(findCustomer(customerId));
+    }
+
+    @Transactional
+    public CustomerResponse updateProfile(Long customerId, ProfileUpdateRequest request) {
+        Customer customer = findCustomer(customerId);
+        customer.setCustomerName(request.customerName());
+        customer.setTelephone(request.telephone());
+        customer.setCustomerBirthday(request.customerBirthday());
+        return CustomerResponse.from(customerRepository.save(customer));
+    }
+
+    @Transactional
+    public void changePassword(Long customerId, ChangePasswordRequest request) {
+        Customer customer = findCustomer(customerId);
+        if (!passwordEncoder.matches(request.oldPassword(), customer.getPassword())) {
+            throw ApiException.badRequest("Old password is incorrect");
+        }
+        if (request.oldPassword().equals(request.newPassword())) {
+            throw ApiException.badRequest("New password must be different from the old password");
+        }
+        customer.setPassword(passwordEncoder.encode(request.newPassword()));
+        customerRepository.save(customer);
+    }
+
     // ===================== HELPER =====================
+
+    private Customer findCustomer(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Customer not found with id: " + id));
+    }
 
     /** BR01: email duy nhat va khong trung email Admin. excludeId != null khi update. */
     private void ensureEmailAvailable(String email, Long excludeId) {
